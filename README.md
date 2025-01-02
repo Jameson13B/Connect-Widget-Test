@@ -9,12 +9,13 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 - Custom `mode` value
 - Users auto save for quick access
 - Supports `include_*` config flags
-- Supports `SAND`, `QA`, and `INT` environments
-- Supports current Member and Microdeposit guid
+- `SAND`, `QA`, and `INT` environments
+- Setting current Member and Microdeposit guid
 
 **Future features:**
 
 - Support to config with products array
+- Support to disable search
 
 ## Prerequisites
 
