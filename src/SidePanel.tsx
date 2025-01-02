@@ -62,11 +62,11 @@ export const SidePanel = ({
       width="33%"
       style={{
         textAlign: 'center',
-        padding: 20,
+        padding: 16,
         backgroundColor: STYLES.Secondary,
       }}
     >
-      <Title level={4} style={{ margin: '0 0 12px' }}>
+      <Title level={4} style={{ margin: '0 0 8px' }}>
         Connect Widget Test
       </Title>
       <Form
@@ -248,6 +248,7 @@ export const SidePanel = ({
             onClick={() =>
               memberGuid ? setMemberGuid(null) : handleAlertInput('member')
             }
+            size="small"
             style={{ width: '30%' }}
             variant={memberGuid ? 'dashed' : 'filled'}
           >
@@ -261,6 +262,7 @@ export const SidePanel = ({
                 ? setMicrodepositGuid(null)
                 : handleAlertInput('microdeposit')
             }
+            size="small"
             style={{ width: '30%' }}
             variant={microdepositGuid ? 'dashed' : 'filled'}
           >
