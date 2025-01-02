@@ -17,6 +17,11 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 - Support to config with products array
 - Support to disable search
 
+<div style="display: flex; flex-direction: row; justify-content: space-evenly;">
+<img src="./public/screenshot-1.png" width="48%" style="max-width: 390px;" />
+<img src="./public/screenshot-2.png" width="48%" style="max-width: 390px;" />
+</div>
+
 ## Prerequisites
 
 - Node.js 18+
