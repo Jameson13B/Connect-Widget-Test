@@ -4,7 +4,7 @@ import { Layout, Form } from 'antd'
 
 import { SidePanel } from './SidePanel'
 import { ContentPanel } from './ContentPanel'
-import axios from 'axios'
+// import axios from 'axios'
 
 function App() {
   const [widgetState, dispatch] = useReducer(widgetReducer, initialState)
@@ -27,28 +27,47 @@ function App() {
       if (form.getFieldValue('includeIdentity')) body.include_identity = true
       if (memberGuid) body.current_member_guid = memberGuid
       if (microdepositGuid) body.current_microdeposit_guid = microdepositGuid
-      const options = {
+      // const options = {
+      // method: 'POST',
+      // url: `/${form.getFieldValue(
+      //   'environment'
+      // )}/api/users/${form.getFieldValue('userGuid')}/widget_urls`,
+      // auth: {
+      //   username: form.getFieldValue('clientExtGuid'),
+      //   password: form.getFieldValue('apiKey'),
+      // },
+      // headers: {
+      //   Accept: 'application/vnd.mx.api.v1+json',
+      //   'Accept-Language': 'en',
+      //   'Content-Type': 'application/json',
+      // },
+      // data: JSON.stringify({
+      //   widget_url: body,
+      // }),
+      // }
+      // const url = `/${form.getFieldValue(
+      //   'environment'
+      // )}/api/users/${form.getFieldValue('userGuid')}/widget_urls`
+      const newUrl = `api.sand.internal.mx/users/${form.getFieldValue(
+        'userGuid'
+      )}/widget_urls`
+
+      fetch('/.netlify/functions/getUrl', {
         method: 'POST',
-        url: `/${form.getFieldValue(
-          'environment'
-        )}/api/users/${form.getFieldValue('userGuid')}/widget_urls`,
-        auth: {
-          username: form.getFieldValue('clientExtGuid'),
-          password: form.getFieldValue('apiKey'),
-        },
         headers: {
-          Accept: 'application/vnd.mx.api.v1+json',
-          'Accept-Language': 'en',
           'Content-Type': 'application/json',
         },
-        data: JSON.stringify({
-          widget_url: body,
+        body: JSON.stringify({
+          url: newUrl,
+          clientExtGuid: form.getFieldValue('clientExtGuid'),
+          apiKey: form.getFieldValue('apiKey'),
+          widget_urlll: body,
         }),
-      }
+      })
+        .then((response) => {
+          const responseData = response.json()
+          console.log(responseData)
 
-      axios
-        .request(options)
-        .then((response: any) => {
           const savedUsers = JSON.parse(
             localStorage.getItem('savedUsers') || '[]'
           )
@@ -92,7 +111,7 @@ function App() {
 
           dispatch({
             type: 'WIDGET_LOADED',
-            payload: response.data.widget_url.url,
+            payload: responseData.data.widget_url.url,
           })
         })
         .catch((error: any) => {
@@ -101,6 +120,62 @@ function App() {
             payload: error.code + ': ' + error.message,
           })
         })
+
+      // axios
+      //   .request(options)
+      //   .then((response: any) => {
+      //     const savedUsers = JSON.parse(
+      //       localStorage.getItem('savedUsers') || '[]'
+      //     )
+      //     const userExists = savedUsers.findIndex(
+      //       (user: any) => user.userGuid === form.getFieldValue('userGuid')
+      //     )
+      //     console.log(userExists)
+
+      //     if (userExists === -1) {
+      //       localStorage.setItem(
+      //         'savedUsers',
+      //         JSON.stringify([
+      //           ...savedUsers,
+      //           {
+      //             userGuid: form.getFieldValue('userGuid'),
+      //             clientExtGuid: form.getFieldValue('clientExtGuid'),
+      //             apiKey: form.getFieldValue('apiKey'),
+      //             environment: form.getFieldValue('environment'),
+      //             mode: form.getFieldValue('mode'),
+      //             includeTransactions: form.getFieldValue(
+      //               'includeTransactions'
+      //             ),
+      //             includeIdentity: form.getFieldValue('includeIdentity'),
+      //             colorScheme,
+      //           },
+      //         ])
+      //       )
+      //     } else {
+      //       savedUsers[userExists] = {
+      //         userGuid: form.getFieldValue('userGuid'),
+      //         clientExtGuid: form.getFieldValue('clientExtGuid'),
+      //         apiKey: form.getFieldValue('apiKey'),
+      //         environment: form.getFieldValue('environment'),
+      //         mode: form.getFieldValue('mode'),
+      //         includeTransactions: form.getFieldValue('includeTransactions'),
+      //         includeIdentity: form.getFieldValue('includeIdentity'),
+      //         colorScheme,
+      //       }
+      //       localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
+      //     }
+
+      //     dispatch({
+      //       type: 'WIDGET_LOADED',
+      //       payload: response.data.widget_url.url,
+      //     })
+      //   })
+      //   .catch((error: any) => {
+      //     dispatch({
+      //       type: 'WIDGET_ERROR',
+      //       payload: error.code + ': ' + error.message,
+      //     })
+      //   })
     }
   }, [
     widgetState.loading,
