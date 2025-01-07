@@ -14,7 +14,10 @@ export default async (request, context) => {
     })
 
     const data = await response.json()
-    return Response.json({ data })
+    return Response.json({
+      data,
+      body: `Your IP address ${request.headers.get('client-ip')}`,
+    })
   } catch (error) {
     console.log('ERROR: ', error)
     return Response.json(
