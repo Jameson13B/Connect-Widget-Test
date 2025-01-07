@@ -1,10 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useReducer, useState } from 'react'
 import { Layout, Form } from 'antd'
+import { Base64 } from 'js-base64'
 
 import { SidePanel } from './SidePanel'
 import { ContentPanel } from './ContentPanel'
 // import axios from 'axios'
+
+const getUrl = (environment: string, userGuid: string) => {
+  const urlMaps = {
+    sand: `https://api.sand.internal.mx/users/${userGuid}/widget_urls`,
+    qa: `https://api.qa.internal.mx/users/${userGuid}/widget_urls`,
+    int: `https://int-api.mx.com/users/${userGuid}/widget_urls`,
+  }
+  return urlMaps[environment as keyof typeof urlMaps]
+}
 
 function App() {
   const [widgetState, dispatch] = useReducer(widgetReducer, initialState)
@@ -27,92 +37,51 @@ function App() {
       if (form.getFieldValue('includeIdentity')) body.include_identity = true
       if (memberGuid) body.current_member_guid = memberGuid
       if (microdepositGuid) body.current_microdeposit_guid = microdepositGuid
-      // const options = {
-      // method: 'POST',
-      // url: `/${form.getFieldValue(
-      //   'environment'
-      // )}/api/users/${form.getFieldValue('userGuid')}/widget_urls`,
-      // auth: {
-      //   username: form.getFieldValue('clientExtGuid'),
-      //   password: form.getFieldValue('apiKey'),
-      // },
-      // headers: {
-      //   Accept: 'application/vnd.mx.api.v1+json',
-      //   'Accept-Language': 'en',
-      //   'Content-Type': 'application/json',
-      // },
-      // data: JSON.stringify({
-      //   widget_url: body,
-      // }),
-      // }
-      // const url = `/${form.getFieldValue(
-      //   'environment'
-      // )}/api/users/${form.getFieldValue('userGuid')}/widget_urls`
-      const newUrl = `api.sand.internal.mx/users/${form.getFieldValue(
-        'userGuid'
-      )}/widget_urls`
 
       fetch('/.netlify/functions/getUrl', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
-          url: newUrl,
-          clientExtGuid: form.getFieldValue('clientExtGuid'),
-          apiKey: form.getFieldValue('apiKey'),
-          widget_urlll: body,
+          url: getUrl(
+            form.getFieldValue('environment'),
+            form.getFieldValue('userGuid')
+          ),
+          body,
+          token: `Basic ${Base64.encode(
+            form.getFieldValue('clientExtGuid') +
+              ':' +
+              form.getFieldValue('apiKey')
+          )}`,
         }),
       })
         .then((response) => response.json())
         .then((response) => {
-          const responseData = response.json()
-          console.log(responseData)
-
           const savedUsers = JSON.parse(
             localStorage.getItem('savedUsers') || '[]'
           )
           const userExists = savedUsers.findIndex(
             (user: any) => user.userGuid === form.getFieldValue('userGuid')
           )
-          console.log(userExists)
-
-          if (userExists === -1) {
-            localStorage.setItem(
-              'savedUsers',
-              JSON.stringify([
-                ...savedUsers,
-                {
-                  userGuid: form.getFieldValue('userGuid'),
-                  clientExtGuid: form.getFieldValue('clientExtGuid'),
-                  apiKey: form.getFieldValue('apiKey'),
-                  environment: form.getFieldValue('environment'),
-                  mode: form.getFieldValue('mode'),
-                  includeTransactions: form.getFieldValue(
-                    'includeTransactions'
-                  ),
-                  includeIdentity: form.getFieldValue('includeIdentity'),
-                  colorScheme,
-                },
-              ])
-            )
-          } else {
-            savedUsers[userExists] = {
-              userGuid: form.getFieldValue('userGuid'),
-              clientExtGuid: form.getFieldValue('clientExtGuid'),
-              apiKey: form.getFieldValue('apiKey'),
-              environment: form.getFieldValue('environment'),
-              mode: form.getFieldValue('mode'),
-              includeTransactions: form.getFieldValue('includeTransactions'),
-              includeIdentity: form.getFieldValue('includeIdentity'),
-              colorScheme,
-            }
-            localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
+          const tempUser = {
+            userGuid: form.getFieldValue('userGuid'),
+            clientExtGuid: form.getFieldValue('clientExtGuid'),
+            apiKey: form.getFieldValue('apiKey'),
+            environment: form.getFieldValue('environment'),
+            mode: form.getFieldValue('mode'),
+            includeTransactions: form.getFieldValue('includeTransactions'),
+            includeIdentity: form.getFieldValue('includeIdentity'),
+            colorScheme,
           }
+
+          if (userExists >= 0) {
+            savedUsers[userExists] = tempUser
+          } else {
+            savedUsers.push(tempUser)
+          }
+          localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
 
           dispatch({
             type: 'WIDGET_LOADED',
-            payload: responseData.data.widget_url.url,
+            payload: response.data.widget_url.url,
           })
         })
         .catch((error: any) => {
@@ -121,62 +90,6 @@ function App() {
             payload: error.code + ': ' + error.message,
           })
         })
-
-      // axios
-      //   .request(options)
-      //   .then((response: any) => {
-      //     const savedUsers = JSON.parse(
-      //       localStorage.getItem('savedUsers') || '[]'
-      //     )
-      //     const userExists = savedUsers.findIndex(
-      //       (user: any) => user.userGuid === form.getFieldValue('userGuid')
-      //     )
-      //     console.log(userExists)
-
-      //     if (userExists === -1) {
-      //       localStorage.setItem(
-      //         'savedUsers',
-      //         JSON.stringify([
-      //           ...savedUsers,
-      //           {
-      //             userGuid: form.getFieldValue('userGuid'),
-      //             clientExtGuid: form.getFieldValue('clientExtGuid'),
-      //             apiKey: form.getFieldValue('apiKey'),
-      //             environment: form.getFieldValue('environment'),
-      //             mode: form.getFieldValue('mode'),
-      //             includeTransactions: form.getFieldValue(
-      //               'includeTransactions'
-      //             ),
-      //             includeIdentity: form.getFieldValue('includeIdentity'),
-      //             colorScheme,
-      //           },
-      //         ])
-      //       )
-      //     } else {
-      //       savedUsers[userExists] = {
-      //         userGuid: form.getFieldValue('userGuid'),
-      //         clientExtGuid: form.getFieldValue('clientExtGuid'),
-      //         apiKey: form.getFieldValue('apiKey'),
-      //         environment: form.getFieldValue('environment'),
-      //         mode: form.getFieldValue('mode'),
-      //         includeTransactions: form.getFieldValue('includeTransactions'),
-      //         includeIdentity: form.getFieldValue('includeIdentity'),
-      //         colorScheme,
-      //       }
-      //       localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
-      //     }
-
-      //     dispatch({
-      //       type: 'WIDGET_LOADED',
-      //       payload: response.data.widget_url.url,
-      //     })
-      //   })
-      //   .catch((error: any) => {
-      //     dispatch({
-      //       type: 'WIDGET_ERROR',
-      //       payload: error.code + ': ' + error.message,
-      //     })
-      //   })
     }
   }, [
     widgetState.loading,
