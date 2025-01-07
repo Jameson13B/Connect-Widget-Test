@@ -64,6 +64,7 @@ function App() {
           widget_urlll: body,
         }),
       })
+        .then((response) => response.json())
         .then((response) => {
           const responseData = response.json()
           console.log(responseData)
