@@ -12,12 +12,9 @@ export default async (request, context) => {
       },
       body: JSON.stringify({ widget_url: req.body }),
     })
-
     const data = await response.json()
-    return Response.json({
-      data,
-      body: `Your IP address ${request.headers.get('client-ip')}`,
-    })
+
+    return Response.json({ data })
   } catch (error) {
     console.log('ERROR: ', error)
     return Response.json(
