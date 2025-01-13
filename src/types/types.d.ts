@@ -6,6 +6,7 @@ interface FormValues {
   environment: string
   includeTransactions: boolean
   includeIdentity: boolean
+  locale: 'en' | 'es' | 'fr-CA'
 }
 
 interface SidePanelProps {

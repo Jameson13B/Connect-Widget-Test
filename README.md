@@ -11,6 +11,7 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 - Supports `include_*` config flags
 - `SAND`, `QA`, and `INT` environments
 - Setting current Member and Microdeposit guid
+- Set locale/language for widget. `en`(English), `es`(Spanish), or `fr-CA`(French Canadian)
 
 **Future features:**
 
@@ -56,9 +57,21 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 - `mode` - The mode of the widget:
   - Agg (`AGGREGATION`)
   - Verify (`VERIFICATION`)
+- `locale` - The locale/language of the widget:
+  - English (`en`)
+  - Spanish (`es`)
+  - French Canadian (`fr-CA`)
 - `colorScheme` - The color scheme of the widget:
   - Light - `ON`
   - Dark - `OFF`
+- `includeTransactions` - The color scheme of the widget:
+  - Include - `ON`
+  - Don't Include - `OFF`
+- `includeIdentity` - The color scheme of the widget:
+  - Include - `ON`
+  - Don't Include - `OFF`
+- `MBR` - The member to load the widget to.
+- `MIC` - The microdeposit to load the widget to(*verification mode only*).
 
 ## Installling Node and NPM
 

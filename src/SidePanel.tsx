@@ -75,6 +75,7 @@ export const SidePanel = ({
         initialValues={{
           mode: 'aggregation',
           environment: 'sand',
+          locale: 'en',
           include_transactions: false,
           include_identity: false,
         }}
@@ -117,6 +118,7 @@ export const SidePanel = ({
               form.setFieldValue('apiKey', selectedUser?.apiKey)
               form.setFieldValue('environment', selectedUser?.environment)
               form.setFieldValue('mode', selectedUser?.mode || 'aggregation')
+              form.setFieldValue('locale', selectedUser?.locale || 'en')
               setColorScheme(selectedUser?.colorScheme)
               if (selectedUser?.includeTransactions) {
                 form.setFieldValue(
@@ -183,6 +185,19 @@ export const SidePanel = ({
               options={[
                 { value: 'aggregation', label: 'Agg' },
                 { value: 'verification', label: 'Verify' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Locale"
+            name="locale"
+            style={{ marginLeft: '2%', width: '48%', marginBottom: 6 }}
+          >
+            <Select
+              options={[
+                { value: 'en', label: 'English' },
+                { value: 'es', label: 'Spanish' },
+                { value: 'fr-CA', label: 'French CA' },
               ]}
             />
           </Form.Item>
