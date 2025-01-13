@@ -34,10 +34,17 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 ## How to use
 
 1. Clone the repo
-2. Run `npm install`
-3. Run `npm run dev`
+1. Open two terminals at project root
+1. _In terminal 1:_
+   - Run `npm install` then `npm run dev`
+   - Should say `VITE v#.#.#  ready ➜  Local:   http://localhost:5173/`
+1. _In terminal 2:_
+   - Run `npm run server`
+   - Should say `🚀 Server running on http://localhost:3001`
 
 ## How to test
+
+> _\*SAND/QA require you to be connected to VPN._
 
 1. Open the [Connect Widget Product Tool](http://localhost:5173/) in your browser
 2. Enter your test user's details and click **"Connect"**
@@ -71,7 +78,7 @@ This is a simple tool for the Product Team to make it easier to test the Connect
   - Include - `ON`
   - Don't Include - `OFF`
 - `MBR` - The member to load the widget to.
-- `MIC` - The microdeposit to load the widget to(*verification mode only*).
+- `MIC` - The microdeposit to load the widget to(_verification mode only_).
 
 ## Installling Node and NPM
 
