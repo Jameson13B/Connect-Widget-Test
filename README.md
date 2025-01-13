@@ -43,6 +43,10 @@ This is a simple tool for the Product Team to make it easier to test the Connect
    - Run `npm run server`
    - Should say `🚀 Server running on http://localhost:3001`
 
+> To update the tool with new version and features:
+>
+> _In your terminal/tab 1:_ Press `control + c` then run `git pull` then restart with step 3 above.
+
 ## How to test
 
 > _\*SAND/QA require you to be connected to VPN._
