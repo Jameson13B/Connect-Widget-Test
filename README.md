@@ -34,11 +34,12 @@ This is a simple tool for the Product Team to make it easier to test the Connect
 ## How to use
 
 1. Clone the repo
-1. Open two terminals at project root
-1. _In terminal 1:_
+   - Run `git clone https://github.com/Jameson13B/Connect-Widget-Test.git`
+1. Open two terminals/tabs at project root
+1. _In terminal/tab 1:_
    - Run `npm install` then `npm run dev`
    - Should say `VITE v#.#.#  ready ➜  Local:   http://localhost:5173/`
-1. _In terminal 2:_
+1. _In terminal/tab 2:_
    - Run `npm run server`
    - Should say `🚀 Server running on http://localhost:3001`
 
