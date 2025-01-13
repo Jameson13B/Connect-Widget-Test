@@ -32,63 +32,71 @@ function App() {
         color_scheme: colorScheme,
         mode: form.getFieldValue('mode'),
       }
+      const headers = {
+        Accept: 'application/vnd.mx.api.v1+json',
+        'Accept-Language': form.getFieldValue('locale'),
+        Authorization: `Basic ${Base64.encode(
+          form.getFieldValue('clientExtGuid') +
+            ':' +
+            form.getFieldValue('apiKey')
+        )}`,
+        'Content-Type': 'application/json',
+      }
+
       if (form.getFieldValue('includeTransactions'))
         body.include_transactions = true
       if (form.getFieldValue('includeIdentity')) body.include_identity = true
       if (memberGuid) body.current_member_guid = memberGuid
       if (microdepositGuid) body.current_microdeposit_guid = microdepositGuid
 
-      fetch('/.netlify/functions/getUrl', {
-        method: 'POST',
-        body: JSON.stringify({
-          url: getUrl(
+      fetch(
+        `http://localhost:3001/?targetUrl=${encodeURIComponent(
+          getUrl(
             form.getFieldValue('environment'),
             form.getFieldValue('userGuid')
-          ),
-          body,
-          token: `Basic ${Base64.encode(
-            form.getFieldValue('clientExtGuid') +
-              ':' +
-              form.getFieldValue('apiKey')
-          )}`,
-        }),
-      })
-        .then((response) => response.json())
-        .then((response) => {
-          const savedUsers = JSON.parse(
-            localStorage.getItem('savedUsers') || '[]'
           )
-          const userExists = savedUsers.findIndex(
-            (user: any) => user.userGuid === form.getFieldValue('userGuid')
-          )
-          const tempUser = {
-            userGuid: form.getFieldValue('userGuid'),
-            clientExtGuid: form.getFieldValue('clientExtGuid'),
-            apiKey: form.getFieldValue('apiKey'),
-            environment: form.getFieldValue('environment'),
-            mode: form.getFieldValue('mode'),
-            includeTransactions: form.getFieldValue('includeTransactions'),
-            includeIdentity: form.getFieldValue('includeIdentity'),
-            colorScheme,
-          }
+        )}`,
+        {
+          method: 'POST',
+          headers: headers,
+          credentials: 'include',
+          body: JSON.stringify({ widget_url: body }),
+        }
+      )
+        .then((response) => response.text())
+        .then((text) => {
+          try {
+            // Get and updated saved users in local storage
+            const savedUsers = JSON.parse(
+              localStorage.getItem('savedUsers') || '[]'
+            )
+            const userExists = savedUsers.findIndex(
+              (user: any) => user.userGuid === form.getFieldValue('userGuid')
+            )
+            savedUsers[userExists >= 0 ? userExists : savedUsers.length] = {
+              userGuid: form.getFieldValue('userGuid'),
+              clientExtGuid: form.getFieldValue('clientExtGuid'),
+              apiKey: form.getFieldValue('apiKey'),
+              environment: form.getFieldValue('environment'),
+              mode: form.getFieldValue('mode'),
+              includeTransactions: form.getFieldValue('includeTransactions'),
+              includeIdentity: form.getFieldValue('includeIdentity'),
+              colorScheme,
+              locale: form.getFieldValue('locale'),
+            }
+            localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
 
-          if (userExists >= 0) {
-            savedUsers[userExists] = tempUser
-          } else {
-            savedUsers.push(tempUser)
+            // Dispatch widget loaded action
+            dispatch({
+              type: 'WIDGET_LOADED',
+              payload: JSON.parse(text).widget_url.url,
+            })
+          } catch (e) {
+            console.error('Failed to parse response as JSON:', text, e)
           }
-          localStorage.setItem('savedUsers', JSON.stringify(savedUsers))
-
-          dispatch({
-            type: 'WIDGET_LOADED',
-            payload: response.data.widget_url.url,
-          })
         })
-        .catch((error: any) => {
-          dispatch({
-            type: 'WIDGET_ERROR',
-            payload: error.code + ': ' + error.message,
-          })
+        .catch((error) => {
+          console.error('Fetch error:', error)
         })
     }
   }, [
